@@ -17,4 +17,8 @@ public class Parcel {
     private String parcelSize;
     private Double parcelWeight;
     private String status;
+    private String deliveryArea;
+    @ManyToOne
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 }
