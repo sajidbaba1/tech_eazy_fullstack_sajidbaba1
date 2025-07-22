@@ -1,47 +1,61 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', formData);
-            const { token } = response.data;
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
+                username,
+                password
+            });
+            const token = response.data.token;
             if (token) {
                 localStorage.setItem('token', token);
-                console.log('JWT stored:', token); // Debug log
-                window.location.href = '/parcels';
+                console.log('JWT stored:', token);
+                navigate('/parcels');
             } else {
+                console.error('No token received from server');
                 setError('No token received from server');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed: Invalid credentials');
+            console.error('Login error:', err.response?.data || err.message);
+            setError(err.response?.data || 'Login failed: Invalid credentials');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="login">
+        <div className="login-form">
             <h2>Login</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
+            {loading && <p>Loading...</p>}
+            <form onSubmit={handleLogin}>
                 <input
                     type="text"
                     placeholder="Username"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                 />
                 <input
                     type="password"
                     placeholder="Password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Login</button>
+                <button type="submit" disabled={loading}>Login</button>
             </form>
         </div>
     );
