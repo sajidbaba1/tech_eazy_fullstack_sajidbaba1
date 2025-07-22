@@ -1,89 +1,215 @@
-Zero Mile Delivery System
-Overview
-A full-stack application for parcel delivery management, with a Spring Boot backend and a React frontend, using JWT authentication and Redux for state management.
-Setup
-Backend
+Here’s a clean, professional, and **well-structured `README.md` file** for your **Zero Mile Delivery System** project, perfect for GitHub:
 
-Install Java 21 and MySQL.
-Configure MySQL database zeromile in backend/src/main/resources/application.properties.
-Update jwt.secret with a secure 32+ character key.
-Navigate to the backend directory (ensure pom.xml is present):cd backend
+---
 
+# 🚚 Zero Mile Delivery System
 
-Build and run:mvn clean install
-java -jar target/zeromile-backend-0.0.1-SNAPSHOT.jar
+A full-stack parcel delivery management system built with **Spring Boot** and **React**, secured using **JWT Authentication**, and managed with **Redux**.
 
+---
 
-Access APIs at http://localhost:8080/api.
+## 🌐 Overview
 
-Frontend
+**Zero Mile Delivery System** is designed to simplify parcel tracking, assignment, and reporting. It includes:
 
-Install Node.js and npm (version 16 or higher).
-Navigate to the frontend directory:cd frontend
+* ✅ Secure login and registration system using JWT
+* 📦 Parcel creation, tracking, and grouping by area
+* 🚗 Driver assignment to parcels
+* 📊 Daily delivery reports
+* 🧩 Backend: Java 21 + Spring Boot 3 + MySQL
+* 🎨 Frontend: React 18 + Redux + React Router
 
+---
 
-Install dependencies:npm install
+## ⚙️ Setup Instructions
 
+### 🔧 Backend Setup
 
-Start the frontend:npm start
+1. **Install Dependencies**
 
+   * Java 21+
+   * MySQL 8+
 
-Access the frontend at http://localhost:3000.
+2. **Configure Database**
 
-APIs
+   * Create a MySQL database named: `zeromile`
+   * Open `backend/src/main/resources/application.properties`
+   * Update the DB credentials and set a strong `jwt.secret` (32+ characters)
 
-POST /api/auth/register: Register a user.
-POST /api/auth/login: Login and receive JWT.
-POST /api/parcels: Create a parcel (requires valid customerName, deliveryAddress, contactNumber, parcelSize, deliveryArea).
-GET /api/parcels: List all parcels.
-GET /api/parcels/{trackingId}: Get parcel by tracking ID.
-GET /api/parcels/group-by-area: Group parcels by delivery area.
-POST /api/parcels/{parcelId}/assign-driver/{driverId}: Assign a driver to a parcel.
-GET /api/parcels/report/daily: Get daily delivery report.
+3. **Build and Run Backend**
 
-Dependencies
+   ```bash
+   cd backend
+   mvn clean install
+   java -jar target/zeromile-backend-0.0.1-SNAPSHOT.jar
+   ```
 
-Backend: Spring Boot 3.2.0, Spring Security 6.2.x, JJWT 0.12.6, MySQL Connector 8.0.33, SLF4J, Logback, Spring Boot Starter Validation.
-Frontend: React 18.2.0, axios 1.6.0, react-redux 8.0.5, redux 4.2.1, redux-thunk 2.4.2, react-router-dom 6.14.0, react-scripts 5.0.1.
+4. **Access Backend APIs**
 
-Improvements
+   ```
+   http://localhost:8080/api
+   ```
 
-ParcelService: Uses constructor injection, logging, and a toParcelDTO helper method.
-ParcelDTO: Added with @NotNull validation for required fields.
-ParcelController: Added @Valid for input validation on createParcel.
-SecurityConfig: Fixed UnsatisfiedDependencyException, added CORS for http://localhost:3000, and permitted unauthenticated access to /.
-UserDetailsServiceImpl: Fixed import conflict for User by using fully qualified name for Spring Security’s User.
-ZeromileBackendApplication: Added test user seeding.
-Login.js and parcelActions.js: Added JWT debug logging and error handling for 403 errors.
-JwtAuthenticationFilter: Added detailed logging for JWT validation.
-store.js: Fixed redux-thunk import error by using named thunk export.
-pom.xml: Added to backend to fix Maven build failure.
+---
 
-Debugging
+### 💻 Frontend Setup
 
-Backend:
-Run Maven from the directory containing pom.xml (e.g., backend or project root).
-Enable debug logging in application.properties:logging.level.org.springframework=DEBUG
-logging.level.com.zeromile=DEBUG
+1. **Install Node.js** (v16 or higher)
 
+2. **Run Frontend**
 
-If Maven fails, verify pom.xml exists and run mvn clean install -X for debug output.
-For 403 errors, check JwtAuthenticationFilter logs for Invalid JWT token or No Bearer token found. Verify user role (VENDOR, ADMIN, SUPERVISOR) in the database.
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
 
+3. **Access Application**
 
-Frontend:
-Check browser DevTools (Network/Console tabs) for failed requests or errors.
-For redux-thunk errors, ensure the named thunk import is used (import { thunk } from 'redux-thunk').
-For 403 errors, verify JWT in localStorage (DevTools > Application > Local Storage) and ensure login stores a valid token.
-If frontend fails to start, run npm install react-scripts --save-dev or clear npm cache (npm cache clean --force).
+   ```
+   http://localhost:3000
+   ```
 
+---
 
+## 🔐 Authentication & Authorization
 
-Postman Collection
-See backend/postman_collection.json for API testing.
-Troubleshooting
+* **Register:** `POST /api/auth/register`
+* **Login:** `POST /api/auth/login` → Returns JWT token
+* Roles: `ADMIN`, `VENDOR`, `SUPERVISOR` (stored in DB)
 
-Maven build failure: Ensure pom.xml is in the backend directory (or project root) and run mvn clean install from there. Check directory structure with dir.
-Frontend won’t start: Run npm install react-scripts --save-dev or clear npm cache (npm cache clean --force).
-403 errors: Verify JWT in Authorization: Bearer <token> header, check user role in the database (SELECT * FROM user), and ensure CORS allows http://localhost:3000.
-Redux errors: Ensure correct imports for redux-thunk and verify Redux store configuration.
+---
+
+## 📡 API Endpoints
+
+| Method | Endpoint                                           | Description                     |
+| ------ | -------------------------------------------------- | ------------------------------- |
+| POST   | `/api/auth/register`                               | Register a new user             |
+| POST   | `/api/auth/login`                                  | Authenticate user & receive JWT |
+| POST   | `/api/parcels`                                     | Create a parcel                 |
+| GET    | `/api/parcels`                                     | Get all parcels                 |
+| GET    | `/api/parcels/{trackingId}`                        | Track parcel by ID              |
+| GET    | `/api/parcels/group-by-area`                       | Get parcels grouped by area     |
+| POST   | `/api/parcels/{parcelId}/assign-driver/{driverId}` | Assign a driver                 |
+| GET    | `/api/parcels/report/daily`                        | Generate daily delivery report  |
+
+---
+
+## 🧩 Tech Stack & Dependencies
+
+### Backend
+
+* Spring Boot 3.2.0
+* Spring Security 6.2.x
+* MySQL Connector 8.0.33
+* JJWT 0.12.6
+* SLF4J, Logback
+* Spring Validation
+
+### Frontend
+
+* React 18.2.0
+* axios 1.6.0
+* react-redux 8.0.5
+* redux 4.2.1
+* redux-thunk 2.4.2
+* react-router-dom 6.14.0
+* react-scripts 5.0.1
+
+---
+
+## ✨ Key Improvements
+
+* 🔁 `ParcelService`: Clean constructor injection and DTO mapper
+* ✅ `ParcelDTO`: Field validations using `@NotNull`
+* 🔍 `ParcelController`: Added `@Valid` validation for inputs
+* 🔒 `SecurityConfig`: Added CORS, fixed dependency injection issues
+* 👤 `UserDetailsServiceImpl`: Resolved class import conflicts
+* 🧪 `ZeromileBackendApplication`: Seeds test user on app startup
+* 🛠️ JWT & Redux: Improved error handling, logging, and token validation
+
+---
+
+## 🪛 Debugging Tips
+
+### Backend
+
+* Enable debug logs:
+
+  ```properties
+  logging.level.org.springframework=DEBUG
+  logging.level.com.zeromile=DEBUG
+  ```
+* Run Maven with debug:
+
+  ```bash
+  mvn clean install -X
+  ```
+
+### Frontend
+
+* For CORS or 403 errors:
+
+  * Check `JwtAuthenticationFilter` logs
+  * Validate JWT token in `Authorization` header
+  * Ensure user role exists in DB
+
+* For Redux or token issues:
+
+  * Check JWT token in browser `localStorage`
+  * Validate redux-thunk import:
+
+    ```js
+    import { thunk } from 'redux-thunk';
+    ```
+
+* If React fails:
+
+  ```bash
+  npm install react-scripts --save-dev
+  npm cache clean --force
+  ```
+
+---
+
+## 🧪 API Testing (Postman)
+
+* ✅ Use the provided [Postman Collection](./backend/postman_collection.json) to test APIs.
+* Ensure correct token in Authorization header:
+
+  ```
+  Bearer <your_jwt_token>
+  ```
+
+---
+
+## 🧯 Troubleshooting
+
+| Issue                    | Fix                                                                      |
+| ------------------------ | ------------------------------------------------------------------------ |
+| **Maven Build Fails**    | Ensure you're inside the `backend` directory and `pom.xml` is present    |
+| **Frontend Won’t Start** | Try: `npm install react-scripts --save-dev` or `npm cache clean --force` |
+| **403 Forbidden Errors** | Check JWT token, user role in DB, and CORS settings                      |
+| **Redux/Thunk Errors**   | Ensure `redux-thunk` is correctly imported and configured                |
+
+---
+
+## 🤝 Contribution
+
+PRs and feedback are welcome! Please open issues if you find any bugs or have suggestions.
+
+---
+
+## 📄 License
+
+MIT License © 2025 \[Your Name or Org]
+
+---
+
+Let me know if you want:
+
+* Badges (build, license, version)
+* Logo or screenshots
+* Deploy instructions for Heroku, Vercel, or Docker setup
+
+Want me to generate a `README.md` file to download or push to GitHub?
