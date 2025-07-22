@@ -1,0 +1,28 @@
+.app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.parcel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.parcel-form input, .parcel-form button {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.parcel-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.parcel-list th, .parcel-list td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
