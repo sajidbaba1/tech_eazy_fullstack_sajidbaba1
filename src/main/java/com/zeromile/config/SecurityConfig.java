@@ -1,6 +1,7 @@
 package com.zeromile.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,29 +18,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+        logger.info("Initializing SecurityConfig with JwtUtil: {}, UserDetailsService: {}, JwtAuthenticationFilter: {}",
+                jwtUtil, userDetailsService, jwtAuthenticationFilter);
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        logger.info("Configuring SecurityFilterChain");
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless API
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Allow public access to auth endpoints
-                        .requestMatchers("/api/parcels/**").hasAnyRole("VENDOR", "ADMIN", "SUPERVISOR") // Restrict parcel endpoints
-                        .anyRequest().authenticated() // All other requests require authentication
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/parcels/**").hasAnyRole("VENDOR", "ADMIN", "SUPERVISOR")
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session for JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
