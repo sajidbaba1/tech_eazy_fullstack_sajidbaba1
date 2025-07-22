@@ -1,77 +1,58 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createParcel } from '../redux/actions/parcelActions';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const ParcelForm = () => {
-    const dispatch = useDispatch();
-    const { loading, error } = useSelector((state) => state.parcels);
-    const [formData, setFormData] = useState({
-        customerName: '',
-        deliveryAddress: '',
-        contactNumber: '',
-        parcelSize: '',
-        deliveryArea: ''
-    });
+function ParcelForm() {
+    const [trackingNumber, setTrackingNumber] = useState('');
+    const [customerUsername, setCustomerUsername] = useState('');
+    const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(createParcel(formData));
+        try {
+            await axios.post('/api/parcels/create', {
+                trackingNumber,
+                customerUsername,
+                status: 'PENDING'
+            }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            navigate('/parcels');
+        } catch (err) {
+            console.error('Error creating parcel:', err);
+        }
     };
 
     return (
-        <div className="parcel-form">
-            <h2>Create Parcel</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {loading && <p>Loading...</p>}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="customerName"
-                    placeholder="Customer Name"
-                    value={formData.customerName}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="deliveryAddress"
-                    placeholder="Delivery Address"
-                    value={formData.deliveryAddress}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="contactNumber"
-                    placeholder="Contact Number"
-                    value={formData.contactNumber}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="parcelSize"
-                    placeholder="Parcel Size"
-                    value={formData.parcelSize}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="deliveryArea"
-                    placeholder="Delivery Area"
-                    value={formData.deliveryArea}
-                    onChange={handleChange}
-                    required
-                />
-                <button type="submit" disabled={loading}>Create Parcel</button>
+        <div className="min-h-screen bg-gray-100 p-6">
+            <h2 className="text-2xl font-bold mb-4 text-center">Create Parcel</h2>
+            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium">Tracking Number</label>
+                    <input
+                        type="text"
+                        value={trackingNumber}
+                        onChange={(e) => setTrackingNumber(e.target.value)}
+                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium">Customer Username</label>
+                    <input
+                        type="text"
+                        value={customerUsername}
+                        onChange={(e) => setCustomerUsername(e.target.value)}
+                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                    />
+                </div>
+                <button type="submit" className="w-full bg-primary text-white p-2 rounded hover:bg-blue-600">
+                    Create Parcel
+                </button>
             </form>
         </div>
     );
-};
+}
 
 export default ParcelForm;
