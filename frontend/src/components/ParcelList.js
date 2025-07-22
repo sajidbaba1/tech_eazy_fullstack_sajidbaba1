@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchParcels } from '../redux/actions/parcelActions';
+import { Link } from 'react-router-dom';
 
 const ParcelList = () => {
-    const [parcels, setParcels] = useState([]);
-    const [error, setError] = useState(null);
+    const dispatch = useDispatch();
+    const parcels = useSelector((state) => state.parcel.parcels);
+    const role = localStorage.getItem('role');
 
     useEffect(() => {
-        const fetchParcels = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/parcels', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                setParcels(response.data);
-            } catch (err) {
-                setError(err.response?.data?.message || 'Failed to fetch parcels');
-            }
-        };
-        fetchParcels();
-    }, []);
+        dispatch(fetchParcels());
+    }, [dispatch]);
 
     return (
         <div className="parcel-list">
             <h2>Parcels</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {role === 'ADMIN' || role === 'VENDOR' ? (
+                <Link to="/parcels/new">
+                    <button>Create Parcel</button>
+                </Link>
+            ) : null}
+            {role === 'ADMIN' || role === 'SUPERVISOR' ? (
+                <Link to="/supervisor-dashboard">
+                    <button>Supervisor Dashboard</button>
+                </Link>
+            ) : null}
             <table>
                 <thead>
                 <tr>
@@ -32,8 +34,8 @@ const ParcelList = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {parcels.map(parcel => (
-                    <tr key={parcel.id}>
+                {parcels.map((parcel) => (
+                    <tr key={parcel.trackingId}>
                         <td>{parcel.trackingId}</td>
                         <td>{parcel.customerName}</td>
                         <td>{parcel.status}</td>

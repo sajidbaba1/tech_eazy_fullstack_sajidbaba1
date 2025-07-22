@@ -18,11 +18,12 @@ const Login = () => {
                 username,
                 password
             });
-            const token = response.data.token;
+            const { token, role } = response.data;
             if (token) {
                 localStorage.setItem('token', token);
-                console.log('JWT stored:', token);
-                navigate('/parcels');
+                localStorage.setItem('role', role);
+                console.log('JWT stored:', token, 'Role:', role);
+                navigate(role === 'SUPERVISOR' || role === 'ADMIN' ? '/supervisor-dashboard' : '/parcels');
             } else {
                 console.error('No token received from server');
                 setError('No token received from server');
