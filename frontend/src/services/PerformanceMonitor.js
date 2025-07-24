@@ -1,132 +1,69 @@
 class PerformanceMonitor {
-    static instance = null;
-    metrics = {
-        renderTimes: [],
+    static metrics = {
         loadTimes: [],
-        interactionTimes: [],
-        errors: []
+        longTasks: [],
+        layoutShifts: [],
     };
 
-    constructor() {
-        if (PerformanceMonitor.instance) {
-            return PerformanceMonitor.instance;
-        }
-        PerformanceMonitor.instance = this;
-        this.initializeObservers();
-    }
-
-    initializeObservers() {
-        // Performance Observer for long tasks
-        if ('PerformanceObserver' in window) {
-            const longTaskObserver = new PerformanceObserver((list) => {
-                list.getEntries().forEach((entry) => {
-                    if (entry.duration > 50) {
-                        console.warn('Long task detected:', {
+    static init() {
+        // Debounce the reporting of long tasks
+        let longTaskTimeout;
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                clearTimeout(longTaskTimeout);
+                longTaskTimeout = setTimeout(() => {
+                    if (entry.duration > 100) { // Only log tasks longer than 100ms
+                        this.metrics.longTasks.push({
                             duration: entry.duration,
                             startTime: entry.startTime,
                             name: entry.name
                         });
-                        this.metrics.renderTimes.push({
-                            timestamp: Date.now(),
-                            duration: entry.duration
-                        });
+                        console.debug('Long task detected:', entry);
                     }
-                });
-            });
-
-            longTaskObserver.observe({ entryTypes: ['longtask'] });
-
-            // Layout shifts observer
-            const layoutShiftObserver = new PerformanceObserver((list) => {
-                list.getEntries().forEach((entry) => {
-                    if (entry.value > 0.1) {
-                        console.warn('Significant layout shift detected:', entry);
-                    }
-                });
-            });
-
-            layoutShiftObserver.observe({ entryTypes: ['layout-shift'] });
-
-            // First Input Delay observer
-            const firstInputObserver = new PerformanceObserver((list) => {
-                list.getEntries().forEach((entry) => {
-                    this.metrics.interactionTimes.push({
-                        timestamp: Date.now(),
-                        duration: entry.duration
-                    });
-                });
-            });
-
-            firstInputObserver.observe({ entryTypes: ['first-input'] });
-        }
-
-        // Error monitoring
-        window.addEventListener('error', (event) => {
-            this.metrics.errors.push({
-                timestamp: Date.now(),
-                message: event.message,
-                source: event.filename,
-                line: event.lineno,
-                column: event.colno
+                }, 1000);
             });
         });
+        observer.observe({ entryTypes: ['longtask'] });
 
-        // Network request monitoring
-        this.interceptNetworkRequests();
+        // Track layout shifts with a minimum threshold
+        const layoutObserver = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                if (entry.value > 0.1) { // Only track significant shifts
+                    this.metrics.layoutShifts.push({
+                        value: entry.value,
+                        timeStamp: entry.startTime
+                    });
+                    console.debug('Layout shift detected:', entry.value.toFixed(3));
+                }
+            });
+        });
+        layoutObserver.observe({ entryTypes: ['layout-shift'] });
     }
 
-    interceptNetworkRequests() {
-        const originalFetch = window.fetch;
-        window.fetch = async (...args) => {
-            const start = performance.now();
-            try {
-                const response = await originalFetch(...args);
-                const duration = performance.now() - start;
-                this.metrics.loadTimes.push({
-                    timestamp: Date.now(),
-                    duration,
-                    url: args[0],
-                    status: response.status
-                });
-                return response;
-            } catch (error) {
-                const duration = performance.now() - start;
-                this.metrics.errors.push({
-                    timestamp: Date.now(),
-                    type: 'network',
-                    duration,
-                    url: args[0],
-                    error: error.message
-                });
-                throw error;
-            }
-        };
-    }
-
-    getMetrics() {
+    static getMetrics() {
         return {
-            averageRenderTime: this.calculateAverage(this.metrics.renderTimes),
-            averageLoadTime: this.calculateAverage(this.metrics.loadTimes),
-            averageInteractionTime: this.calculateAverage(this.metrics.interactionTimes),
-            errorCount: this.metrics.errors.length,
-            recentErrors: this.metrics.errors.slice(-5)
+            averageLoadTime: this.calculateAverageLoadTime(),
+            totalLongTasks: this.metrics.longTasks.length,
+            totalLayoutShifts: this.metrics.layoutShifts.length
         };
     }
 
-    calculateAverage(items) {
-        if (!items.length) return 0;
-        const sum = items.reduce((acc, item) => acc + item.duration, 0);
-        return sum / items.length;
+    static calculateAverageLoadTime() {
+        if (this.metrics.loadTimes.length === 0) return 0;
+        const sum = this.metrics.loadTimes.reduce((acc, curr) => acc + curr.duration, 0);
+        return sum / this.metrics.loadTimes.length;
     }
 
-    clearMetrics() {
+    static clearMetrics() {
         this.metrics = {
-            renderTimes: [],
             loadTimes: [],
-            interactionTimes: [],
-            errors: []
+            longTasks: [],
+            layoutShifts: []
         };
     }
 }
 
-export default new PerformanceMonitor();
+// Initialize performance monitoring
+PerformanceMonitor.init();
+
+export default PerformanceMonitor;

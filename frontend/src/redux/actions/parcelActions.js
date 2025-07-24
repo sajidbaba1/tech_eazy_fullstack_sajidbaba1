@@ -7,6 +7,7 @@ export const fetchParcels = () => async (dispatch) => {
     if (!token) {
         dispatch({ type: 'FETCH_PARCELS_FAILURE', payload: 'No JWT token found' });
         window.location.href = '/login';
+     
         return;
     }
     try {

@@ -3,6 +3,7 @@ import axios from '../axiosConfig';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from './LoadingSpinner';
 import PerformanceMonitor from '../services/PerformanceMonitor';
+import { format } from 'date-fns';
 
 const CustomerTracking = () => {
     const [trackingNumber, setTrackingNumber] = useState('');
@@ -18,7 +19,7 @@ const CustomerTracking = () => {
         try {
             setLoading(true);
             setError('');
-            const response = await axios.get(`/api/parcels/track/${trackingNumber}`);
+            const response = await axios.get(`/parcels/track/${trackingNumber}`);
             setParcel(response.data);
 
             // Record performance metrics
@@ -49,12 +50,12 @@ const CustomerTracking = () => {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-all duration-200">
             <div className="max-w-2xl mx-auto">
-                <div className={\`
+                <div className={`
                     bg-white dark:bg-gray-800
                     rounded-lg shadow-lg p-6
                     transform transition-all duration-300
-                    \${reducedMotion ? '' : 'hover:shadow-xl'}
-                \`}>
+                    ${reducedMotion ? '' : 'hover:shadow-xl'}
+                `}>
                     <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
                         Track Your Parcel
                     </h2>
@@ -66,7 +67,7 @@ const CustomerTracking = () => {
                                 value={trackingNumber}
                                 onChange={(e) => setTrackingNumber(e.target.value.toUpperCase())}
                                 placeholder="Enter tracking number (e.g., TRK123)"
-                                className={\`
+                                className={`
                                     w-full px-4 py-2 rounded-lg
                                     border-2 border-gray-300 dark:border-gray-600
                                     bg-white dark:bg-gray-700
@@ -74,12 +75,12 @@ const CustomerTracking = () => {
                                     placeholder-gray-500 dark:placeholder-gray-400
                                     focus:outline-none focus:ring-2 focus:ring-blue-500
                                     transition-all duration-200
-                                \`}
+                                `}
                             />
                             <button
                                 type="submit"
                                 disabled={loading || !trackingNumber}
-                                className={\`
+                                className={`
                                     absolute right-2 top-2
                                     px-4 py-1 rounded-md
                                     bg-blue-500 hover:bg-blue-600
@@ -88,8 +89,8 @@ const CustomerTracking = () => {
                                     transition-all duration-200
                                     transform hover:scale-105 active:scale-95
                                     disabled:opacity-50 disabled:cursor-not-allowed
-                                    \${loading ? 'cursor-wait' : ''}
-                                \`}
+                                    ${loading ? 'cursor-wait' : ''}
+                                `}
                             >
                                 {loading ? 'Tracking...' : 'Track'}
                             </button>
@@ -103,31 +104,31 @@ const CustomerTracking = () => {
                     )}
 
                     {error && (
-                        <div className={\`
+                        <div className={`
                             mt-4 p-4 rounded-lg
                             bg-red-100 dark:bg-red-900
                             text-red-700 dark:text-red-200
                             border border-red-400 dark:border-red-700
-                            \${reducedMotion ? '' : 'animate-shake'}
-                        \`}>
+                            ${reducedMotion ? '' : 'animate-shake'}
+                        `}>
                             {error}
                         </div>
                     )}
 
                     {parcel && (
-                        <div className={\`
+                        <div className={`
                             mt-6 space-y-4
                             transform transition-all duration-300
-                            \${reducedMotion ? '' : 'animate-fade-in'}
-                        \`}>
+                            ${reducedMotion ? '' : 'animate-fade-in'}
+                        `}>
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                     Parcel Details
                                 </h3>
-                                <span className={\`
+                                <span className={`
                                     px-3 py-1 rounded-full text-sm font-medium
-                                    \${getStatusColor(parcel.status)}
-                                \`}>
+                                    ${getStatusColor(parcel.status)}
+                                `}>
                                     {parcel.status}
                                 </span>
                             </div>
@@ -154,7 +155,7 @@ const CustomerTracking = () => {
                                         Created At
                                     </p>
                                     <p className="text-gray-900 dark:text-white">
-                                        {new Date(parcel.createdAt).toLocaleDateString()}
+                                        {format(new Date(parcel.createdAt), 'PPP p')}
                                     </p>
                                 </div>
                                 <div className="space-y-2">
@@ -162,7 +163,7 @@ const CustomerTracking = () => {
                                         Last Updated
                                     </p>
                                     <p className="text-gray-900 dark:text-white">
-                                        {new Date(parcel.updatedAt).toLocaleDateString()}
+                                        {format(new Date(parcel.updatedAt), 'PPP p')}
                                     </p>
                                 </div>
                             </div>
