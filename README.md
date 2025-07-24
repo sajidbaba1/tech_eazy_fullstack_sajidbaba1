@@ -1,112 +1,135 @@
-  - `controller/` - REST API endpoints
-  - `dto/` - Data Transfer Objects
-  - `entity/` - Domain models
-  - `service/` - Business logic
-  - `repository/` - Data access layer
-
-### Frontend
-- `src/`
-  - `components/` - React components
-  - `context/` - React context (theme, auth)
-  - `services/` - API services
-  - `redux/` - State management
-
-## User Roles and Permissions
-
-1. Admin
-   - Access all features
-   - Manage vendors and drivers
-   - View analytics
-
-2. Vendor
-   - Upload parcel lists
-   - Track own orders
-   - Cancel/Reschedule deliveries
-
-3. Driver
-   - View assigned parcels
-   - Update delivery status
-   - Mark attendance
-
-4. Customer
-   - Track parcels
-   - Reschedule delivery
-   - Raise support tickets
 # Zero Mile Delivery System
 
-A full-stack web application for managing last-mile parcel delivery from a central warehouse.
+A full-stack delivery management system with role-based access control.
 
 ## Features
 
-- Multiple vendor parcel list management
-- Real-time delivery tracking
-- Role-based access control (Admin, Vendor, Driver, Customer)
-- Parcel grouping by delivery area and size
-- JWT-based authentication
-- Responsive React frontend
+- Role-based authentication (Admin, Vendor, Driver, Customer)
+- Real-time parcel tracking
+- Driver assignment and management
+- Performance monitoring and analytics
+- Dark mode support
+- Responsive design
 
 ## Tech Stack
 
 ### Backend
 - Java Spring Boot
-- JWT Authentication
-- In-memory data storage
-- REST API
-- Exception Handling
-- OOP concepts implementation
+- Spring Security with JWT
+- H2 Database
+- JPA/Hibernate
+- Maven
 
 ### Frontend
-- React.js with Hooks
-- Tailwind CSS for styling
-- React Router for navigation
+- React.js
+- Redux for state management
+- Tailwind CSS
 - Axios for API calls
-- JWT token handling
-- Form handling with validation
 
-## Setup Instructions
+## Getting Started
 
-### Backend Setup
-1. Navigate to the backend directory:
+### Prerequisites
+- Java 21 or higher
+- Node.js 16 or higher
+- Maven
+- npm/yarn
+
+### Installation
+
+1. **Clone the repository**
 ```bash
-cd backend
+git clone [repository-url]
+cd ZeroMileDeliverySystemBackend
 ```
 
-2. Run the Spring Boot application:
+2. **Backend Setup**
 ```bash
-./mvnw spring-boot:run
+# Build and run the Spring Boot application
+mvn clean install
+java -jar target/zeromile-backend-0.0.1-SNAPSHOT.jar
 ```
-The backend will start on port 8000
+The backend will start on http://localhost:8000
 
-### Frontend Setup
-1. Navigate to the frontend directory:
+3. **Frontend Setup**
 ```bash
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm start
 ```
-The frontend will start on port 80
+The frontend will start on http://localhost:80
+
+## Default Users
+
+The system comes with pre-configured users for testing:
+
+| Username | Password    | Role     |
+|----------|------------|----------|
+| admin    | password123| ADMIN    |
+| vendor   | password123| VENDOR   |
+| driver   | password123| DRIVER   |
+| testuser | password123| CUSTOMER |
 
 ## API Documentation
 
-The complete Postman collection is available in the `resources/` directory.
+### Authentication
 
-### Main Endpoints
-- POST /api/auth/login - User authentication
-- GET /api/parcels - Get all parcels
-- POST /api/parcels - Create new parcel
-- GET /api/parcels/{trackingId} - Get parcel by tracking ID
-- POST /api/parcels/assign - Assign driver to parcel
+- POST `/api/auth/login`: Login with username and password
+- POST `/api/auth/validate`: Validate JWT token
 
-## Project Structure
+### Parcels
 
-### Backend
-- `src/main/java/com/zeromile/`
-  - `config/` - Security and JWT configuration
+- GET `/api/parcels`: Get parcels (filtered by user role)
+- POST `/api/parcels/create`: Create new parcel (VENDOR, ADMIN only)
+- POST `/api/parcels/assign`: Assign driver to parcel (ADMIN only)
+- GET `/api/parcels/track/{trackingNumber}`: Track parcel status (public)
+
+### Security Notes
+
+1. All API endpoints (except login and tracking) require JWT authentication
+2. Token must be included in Authorization header: `Bearer <token>`
+3. CORS is configured for localhost development
+
+## Development Notes
+
+### Environment Configuration
+
+Backend configuration is in `src/main/resources/application.properties`:
+- Server port: 8000
+- H2 Database console: http://localhost:8000/h2-console
+- JWT expiration: 1 hour
+
+Frontend configuration is in `frontend/.env`:
+- API base URL: http://localhost:8000/api
+- Port: 80
+
+### Building for Production
+
+1. **Backend**
+```bash
+mvn clean package -Pprod
+```
+
+2. **Frontend**
+```bash
+cd frontend
+npm run build
+```
+
+## Testing
+
+1. Import the Postman collection from `src/main/resources/ZeroMileDelivery.postman_collection.json`
+2. Create an environment with variables:
+   - `jwt_token`
+   - `tracking_number`
+   - `parcel_id`
+   - `driver_id`
+
+## Contributing
+
+1. Create a feature branch
+2. Commit changes
+3. Open a pull request
+
+## License
+
+This project is licensed under the MIT License.
