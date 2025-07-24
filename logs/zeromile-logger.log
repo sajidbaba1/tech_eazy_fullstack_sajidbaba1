@@ -12582,3 +12582,21 @@ DELETE FROM parcel [42104-224]
 2025-07-24 12:05:25.544 DEBUG [SpringApplicationShutdownHook] SqlStatementLogger: drop table if exists users cascade 
 2025-07-24 12:05:25.551 INFO  [SpringApplicationShutdownHook] HikariDataSource: HikariPool-1 - Shutdown initiated...
 2025-07-24 12:05:25.556 INFO  [SpringApplicationShutdownHook] HikariDataSource: HikariPool-1 - Shutdown completed.
+2025-07-24 12:06:38.270 INFO  [http-nio-8000-exec-8] DirectJDKLog: Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-24 12:06:38.271 INFO  [http-nio-8000-exec-8] FrameworkServlet: Initializing Servlet 'dispatcherServlet'
+2025-07-24 12:06:38.274 INFO  [http-nio-8000-exec-8] FrameworkServlet: Completed initialization in 2 ms
+2025-07-24 12:06:38.288 DEBUG [http-nio-8000-exec-8] FilterChainProxy: Securing GET /api
+2025-07-24 12:06:38.302 DEBUG [http-nio-8000-exec-8] JwtAuthenticationFilter: No Bearer token found in Authorization header
+2025-07-24 12:06:38.307 DEBUG [http-nio-8000-exec-8] AnonymousAuthenticationFilter: Set SecurityContextHolder to anonymous SecurityContext
+2025-07-24 12:06:38.308 WARN  [http-nio-8000-exec-8] HandlerMappingIntrospector$CacheResultLogHelper: Cache miss for REQUEST dispatch to '/api' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-07-24 12:06:38.324 DEBUG [http-nio-8000-exec-8] Http403ForbiddenEntryPoint: Pre-authenticated entry point called. Rejecting access
+2025-07-24 12:06:38.327 DEBUG [http-nio-8000-exec-8] FilterChainProxy: Securing GET /error
+2025-07-24 12:06:38.341 DEBUG [http-nio-8000-exec-8] FilterChainProxy: Secured GET /error
+2025-07-24 12:06:38.383 DEBUG [http-nio-8000-exec-8] AnonymousAuthenticationFilter: Set SecurityContextHolder to anonymous SecurityContext
+2025-07-24 12:06:39.248 DEBUG [http-nio-8000-exec-1] FilterChainProxy: Securing GET /favicon.ico
+2025-07-24 12:06:39.249 DEBUG [http-nio-8000-exec-1] JwtAuthenticationFilter: No Bearer token found in Authorization header
+2025-07-24 12:06:39.249 DEBUG [http-nio-8000-exec-1] AnonymousAuthenticationFilter: Set SecurityContextHolder to anonymous SecurityContext
+2025-07-24 12:06:39.252 DEBUG [http-nio-8000-exec-1] Http403ForbiddenEntryPoint: Pre-authenticated entry point called. Rejecting access
+2025-07-24 12:06:39.253 DEBUG [http-nio-8000-exec-1] FilterChainProxy: Securing GET /error
+2025-07-24 12:06:39.254 DEBUG [http-nio-8000-exec-1] FilterChainProxy: Secured GET /error
+2025-07-24 12:06:39.311 DEBUG [http-nio-8000-exec-1] AnonymousAuthenticationFilter: Set SecurityContextHolder to anonymous SecurityContext
