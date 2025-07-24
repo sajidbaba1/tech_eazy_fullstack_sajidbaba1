@@ -1,0 +1,15 @@
+console.log("satrt the code ");
+setTimeout(()=>console.log("this is setTimeout"), 1000);
+console.log("end the code ");
+
+function f() {
+    setTimeout(() => {
+        console.log("this is setTimeout inside function f");
+    }, 2000);
+function g() {
+        console.log("this is function g");
+    }
+    g();
+    fun1();
+    func2();
+}
