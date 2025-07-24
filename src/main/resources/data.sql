@@ -1,6 +1,7 @@
--- Clean up existing data
-DELETE FROM drivers;
+-- Clean up existing data in correct order
+DELETE FROM parcel;
 DELETE FROM users;
+DELETE FROM drivers;
 
 -- Insert test users with password 'password123' for all users
 INSERT INTO users (username, password, role)
